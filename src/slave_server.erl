@@ -11,7 +11,7 @@
 -behaviour(gen_server).
 
 %% API
--export([start_link/0, mine/2]).
+-export([start_link/0, mine/5, mine_async/5]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
@@ -25,10 +25,16 @@
 %%% API
 %%%===================================================================
 
-mine(JSON_Start, JSON_End) ->
-    A = gen_server:call(?MODULE, {mine, JSON_Start, JSON_End}),
+mine(JSON_Start, JSON_End, From, To, Leading_Zeros) ->
+    A = gen_server:call(?MODULE, {mine, JSON_Start, JSON_End, From, To, Leading_Zeros}),
     io:format("~p", [A]).
 
+mine_async(JSON_Start, JSON_End, From, To, Leading_Zeros) ->
+    gen_server:cast(?MODULE, {mine, self(), JSON_Start, JSON_End, From, To, Leading_Zeros}),
+    receive
+        A -> io:format("~p", [A])
+        after 5000 -> ok
+    end.
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -76,12 +82,12 @@ init([]) ->
 			 {noreply, NewState :: term(), hibernate} |
 			 {stop, Reason :: term(), Reply :: term(), NewState :: term()} |
 			 {stop, Reason :: term(), NewState :: term()}.
-handle_call({true}, _From, State) ->
-    {reply, "Hello", State};
+handle_call({mine, JSON_Start, JSON_End, From, To, Leading_Zeros}, _From, State) ->
+    Response = block_finder:find_block(JSON_Start, JSON_End, From, To, Leading_Zeros),
+    {reply, Response, State};
 
 handle_call(_Request, _From, State) ->
-    Reply = ok,
-    {reply, Reply, State}.
+    {reply, {error}, State}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -94,6 +100,11 @@ handle_call(_Request, _From, State) ->
 			 {noreply, NewState :: term(), Timeout :: timeout()} |
 			 {noreply, NewState :: term(), hibernate} |
 			 {stop, Reason :: term(), NewState :: term()}.
+handle_cast({mine, Origin, JSON_Start, JSON_End, From, To, Leading_Zeros}, State) ->
+    Response = block_finder:find_block(JSON_Start, JSON_End, From, To, Leading_Zeros),
+    Origin ! Response,
+    {noreply, State};
+
 handle_cast(_Request, State) ->
     {noreply, State}.
 
