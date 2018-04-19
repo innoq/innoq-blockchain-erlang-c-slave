@@ -1,5 +1,5 @@
 {application, slave,
- [{description, "An OTP application"},
+ [{description, "Blockchain SHA256 Slave"},
   {vsn, "0.1.0"},
   {registered, []},
   {mod, { slave_app, []}},
