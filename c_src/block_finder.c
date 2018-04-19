@@ -3,17 +3,17 @@
 #include <erl_nif.h>
 #include <openssl/sha.h>
 
-#define MAX_NUMBER_LEN 11
+#define MAX_NUMBER_LEN 25
 
 static ERL_NIF_TERM find_block_parts_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]) {
   ErlNifBinary prefix, suffix;
-  unsigned int from, to, leading_zeros;
+  unsigned long from, to, leading_zeros;
 
   if (!enif_inspect_binary(env, argv[0], &prefix)
       || !enif_inspect_binary(env, argv[1], &suffix)
-      || !enif_get_uint(env, argv[2], &from)
-      || !enif_get_uint(env, argv[3], &to)
-      || !enif_get_uint(env, argv[4], &leading_zeros)) {
+      || !enif_get_ulong(env, argv[2], &from)
+      || !enif_get_ulong(env, argv[3], &to)
+      || !enif_get_ulong(env, argv[4], &leading_zeros)) {
     return enif_make_badarg(env);
   }
 
@@ -26,8 +26,8 @@ static ERL_NIF_TERM find_block_parts_nif(ErlNifEnv* env, int argc, const ERL_NIF
   unsigned char byteResultHash[SHA256_DIGEST_LENGTH];
   SHA256_CTX c;
 
-  for (int i = from; i < to; i++) {
-    snprintf(proof, MAX_NUMBER_LEN, "%d", i);
+  for (long i = from; i < to; i++) {
+    snprintf(proof, MAX_NUMBER_LEN, "%ld", i);
     int proof_len = strlen(proof);
 
     SHA256_Init(&c);
