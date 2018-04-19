@@ -11,7 +11,7 @@
 -behaviour(gen_server).
 
 %% API
--export([start_link/0, test/0]).
+-export([start_link/0, mine/2]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
@@ -26,7 +26,7 @@
 %%%===================================================================
 
 mine(JSON_Start, JSON_End) ->
-    %A = gen_server:call(?MODULE, {mine, JSON_Start, JSON_End}),
+    A = gen_server:call(?MODULE, {mine, JSON_Start, JSON_End}),
     io:format("~p", [A]).
 
 
