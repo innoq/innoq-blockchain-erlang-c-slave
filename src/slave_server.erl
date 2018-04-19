@@ -46,7 +46,7 @@ mine_async(JSON_Start, JSON_End, From, To, Leading_Zeros) ->
 		      {error, Error :: term()} |
 		      ignore.
 start_link() ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
+    gen_server:start_link({global, ?SERVER}, ?MODULE, [], []).
 
 %%%===================================================================
 %%% gen_server callbacks
