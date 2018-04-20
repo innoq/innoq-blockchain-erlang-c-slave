@@ -1,0 +1,9 @@
+version: '3'
+services:
+  client:
+    build: .
+    deploy:
+      mode: replicated
+      replicas: 4 # num of cpu cores
+    environment:
+      - "OWN_IP=10.100.110.119"
