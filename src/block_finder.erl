@@ -18,10 +18,10 @@ init() ->
 % binary holding the calculated hash
 find_block(Prefix, Suffix, From, To, LeadingZeros) ->
     case find_block_parts(Prefix, Suffix, From, To, LeadingZeros) of
-        {false} -> {error, "no matching hash found"};
+        {false} -> {no_proof_found, "no matching hash found"};
         {true, Proof, Hash} ->
-            {ok, <<Prefix/binary, Proof/binary, Suffix/binary>>, bin_to_hexstr(Hash)};
-        X -> erlang:error("Unexpected response from find_block_parts")
+            {proof_found, <<Prefix/binary, Proof/binary, Suffix/binary>>, bin_to_hexstr(Hash)};
+        _X -> erlang:error("Unexpected response from find_block_parts")
     end.
 
 find_block_parts(Prefix, Suffix, From, To, LeadingZeros) ->

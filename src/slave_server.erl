@@ -100,9 +100,9 @@ handle_call(_Request, _From, State) ->
 			 {noreply, NewState :: term(), Timeout :: timeout()} |
 			 {noreply, NewState :: term(), hibernate} |
 			 {stop, Reason :: term(), NewState :: term()}.
-handle_cast({mine, Origin, JSON_Start, JSON_End, From, To, Leading_Zeros}, State) ->
+handle_cast({mine, JSON_Start, JSON_End, From, To, Leading_Zeros}, State) ->
     Response = block_finder:find_block(JSON_Start, JSON_End, From, To, Leading_Zeros),
-    Origin ! Response,
+    gen_server:cast({global, mining}, Response),
     {noreply, State};
 
 handle_cast(_Request, State) ->
