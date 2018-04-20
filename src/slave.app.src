@@ -8,7 +8,7 @@
     stdlib
    ]},
   {env, [
-	 {master_node, 'master@Christophs-MacBook-Pro-5.local'}
+	 {master_node, 'master@10.93.3.127'}
 	]
   },
   {modules, []},
