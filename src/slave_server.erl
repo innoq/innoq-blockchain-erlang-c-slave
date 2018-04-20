@@ -65,9 +65,16 @@ start_link() ->
 			      ignore.
 init([]) ->
     process_flag(trap_exit, true),
-    {ok, NodeName} = application:get_env(slave, master_node),
-    io:format("Connecting to master node ~p\n", [NodeName]),
-    net_adm:ping(NodeName),
+    {ok, MasterNode} = application:get_env(slave, master_node),
+    io:format("Connecting to master node ~p\n", [MasterNode]),
+    net_adm:ping(MasterNode),
+    NodeName = node(),
+    {LoadFactor, _} = string:to_integer(os:getenv("LOADFACTOR", "1")),
+    io:format("NodeName: ~p, Loadfactor: ~p", [NodeName, LoadFactor]),
+    receive
+    after 1000 ->
+	    gen_server:cast({global, mining}, {node_up, {NodeName, LoadFactor}})
+    end,
     {ok, #state{}}.
 
 %%--------------------------------------------------------------------
