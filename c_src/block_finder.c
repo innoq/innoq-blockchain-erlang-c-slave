@@ -1,7 +1,9 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <erl_nif.h>
 #include <openssl/sha.h>
+#include "omp.h"
 
 #define MAX_NUMBER_LEN 25
 
@@ -20,7 +22,7 @@ static ERL_NIF_TERM find_block_parts_nif(ErlNifEnv* env, int argc, const ERL_NIF
   leading_zeros /= 2;
 
   unsigned char zeros[leading_zeros];
-  unsigned char proof[MAX_NUMBER_LEN];
+  char proof[MAX_NUMBER_LEN];
   memset(zeros, 0, leading_zeros);
 
   unsigned char byteResultHash[SHA256_DIGEST_LENGTH];
