@@ -111,7 +111,7 @@ handle_call(_Request, _From, State) ->
 			 {noreply, NewState :: term(), hibernate} |
 			 {stop, Reason :: term(), NewState :: term()}.
 handle_cast({mine, JSON_Start, JSON_End, From, To, Leading_Zeros}, State) ->
-    io:format("mining from ~p to ~p. leading zero: ~p\n", [From, To, Leading_Zeros]),
+    io:format("mining from ~p to ~p. leading zero: ~p\n", [From, To - 1, Leading_Zeros]),
     case block_finder:find_block(JSON_Start, JSON_End, From, To, Leading_Zeros) of
 	{proof_found, Block, Sha} ->
 	    io:format("proof found - sha: ~p\n", [Sha]),
