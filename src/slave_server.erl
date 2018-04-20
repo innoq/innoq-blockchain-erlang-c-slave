@@ -122,8 +122,8 @@ handle_cast({mine, Index, JSON_Start, JSON_End, From, To, Leading_Zeros}, State)
     end,	
     {noreply, State};
 
-handle_cast(_Request, State) ->
-    io:format("unknown handle_cast called\n"),
+handle_cast(Request, State) ->
+    io:format("unknown handle_cast called with: ~p\n", [Request]),
     {noreply, State}.
 
 %%--------------------------------------------------------------------
