@@ -65,6 +65,9 @@ start_link() ->
 			      ignore.
 init([]) ->
     process_flag(trap_exit, true),
+    {ok, NodeName} = application:get_env(slave, master_node),
+    io:format("Connecting to master node ~p\n", [NodeName]),
+    net_adm:ping(NodeName),
     {ok, #state{}}.
 
 %%--------------------------------------------------------------------
