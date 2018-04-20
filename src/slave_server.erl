@@ -110,12 +110,12 @@ handle_call(_Request, _From, State) ->
 			 {noreply, NewState :: term(), Timeout :: timeout()} |
 			 {noreply, NewState :: term(), hibernate} |
 			 {stop, Reason :: term(), NewState :: term()}.
-handle_cast({mine, JSON_Start, JSON_End, From, To, Leading_Zeros}, State) ->
-    io:format("mining from ~p to ~p. leading zero: ~p\n", [From, To - 1, Leading_Zeros]),
+handle_cast({mine, Index, JSON_Start, JSON_End, From, To, Leading_Zeros}, State) ->
+    io:format("mining from ~p to ~p. leading zero: ~p, Index: ~p\n", [From, To - 1, Leading_Zeros, Index]),
     case block_finder:find_block(JSON_Start, JSON_End, From, To, Leading_Zeros) of
 	{proof_found, Block, Sha} ->
 	    io:format("proof found - sha: ~p\n", [Sha]),
-	    gen_server:cast({global, mining}, {proof_found, node(), Block, Sha});
+	    gen_server:cast({global, mining}, {proof_found, node(), Index, Block, Sha});
 	{no_proof_found, Message} ->
 	    io:format("no proof found.\n", []),
 	    gen_server:cast({global, mining}, {no_proof_found, node(), Message})
