@@ -46,7 +46,7 @@ mine_async(JSON_Start, JSON_End, From, To, Leading_Zeros) ->
 		      {error, Error :: term()} |
 		      ignore.
 start_link() ->
-    gen_server:start_link({global, ?SERVER}, ?MODULE, [], []).
+    gen_server:start_link({global, node()}, ?MODULE, [], []).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -111,11 +111,17 @@ handle_call(_Request, _From, State) ->
 			 {noreply, NewState :: term(), hibernate} |
 			 {stop, Reason :: term(), NewState :: term()}.
 handle_cast({mine, JSON_Start, JSON_End, From, To, Leading_Zeros}, State) ->
-    Response = block_finder:find_block(JSON_Start, JSON_End, From, To, Leading_Zeros),
-    gen_server:cast({global, mining}, Response),
+    io:format("mine called"),
+    case block_finder:find_block(JSON_Start, JSON_End, From, To, Leading_Zeros) of
+	{proof_found, Block, Sha} ->
+	    gen_server:cast({global, mining}, {proof_found, node(), Block, Sha});
+	{no_proof_found, Message} ->
+	    gen_server:cast({global, mining}, {no_proof_found, node(), Message})
+    end,	
     {noreply, State};
 
 handle_cast(_Request, State) ->
+    io:format("unknown handle_cast called"),
     {noreply, State}.
 
 %%--------------------------------------------------------------------
