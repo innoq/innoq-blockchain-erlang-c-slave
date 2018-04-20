@@ -70,7 +70,7 @@ init([]) ->
     net_adm:ping(MasterNode),
     NodeName = node(),
     {LoadFactor, _} = string:to_integer(os:getenv("LOADFACTOR", "1")),
-    io:format("NodeName: ~p, Loadfactor: ~p", [NodeName, LoadFactor]),
+    io:format("NodeName: ~p, Loadfactor: ~p\n", [NodeName, LoadFactor]),
     receive
     after 1000 ->
 	    gen_server:cast({global, mining}, {node_up, {NodeName, LoadFactor}})
@@ -111,17 +111,19 @@ handle_call(_Request, _From, State) ->
 			 {noreply, NewState :: term(), hibernate} |
 			 {stop, Reason :: term(), NewState :: term()}.
 handle_cast({mine, JSON_Start, JSON_End, From, To, Leading_Zeros}, State) ->
-    io:format("mine called"),
+    io:format("mining from ~p to ~p. leading zero: ~p\n", [From, To, Leading_Zeros]),
     case block_finder:find_block(JSON_Start, JSON_End, From, To, Leading_Zeros) of
 	{proof_found, Block, Sha} ->
+	    io:format("proof found - sha: ~p\n", [Sha]),
 	    gen_server:cast({global, mining}, {proof_found, node(), Block, Sha});
 	{no_proof_found, Message} ->
+	    io:format("no proof found.\n", []),
 	    gen_server:cast({global, mining}, {no_proof_found, node(), Message})
     end,	
     {noreply, State};
 
 handle_cast(_Request, State) ->
-    io:format("unknown handle_cast called"),
+    io:format("unknown handle_cast called\n"),
     {noreply, State}.
 
 %%--------------------------------------------------------------------
