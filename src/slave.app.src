@@ -8,7 +8,7 @@
     stdlib
    ]},
   {env, [
-	 {master_node, 'master@10.93.3.127'}
+	 {master_node, 'master@10.100.110.230'}
 	]
   },
   {modules, []},
